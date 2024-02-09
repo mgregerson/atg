@@ -155,9 +155,3 @@ Response:
 ```json
 {"message": "User deleted successfully"}
 ```
-
-## License
-
-This project is licensed under the GPL-3.0 License - see the LICENSE file for details.
-
-Copyright 2023, Max Base
