@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
-from app import UserSchema
-from app.database import SessionLocal, engine
+
+from app import models
+from app.schemas import courseSchemas, roundSchemas, scoreSchemas, userSchemas
+from app.crud import courses, rounds, users, scores
+from app.database.db import SessionLocal, engine
 from typing import List
 
 models.Base.metadata.create_all(bind=engine)
@@ -17,52 +19,56 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/users/", response_model=UserSchema.User)
-def create_user(user: UserSchema.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+@app.post("/users/", response_model=userSchemas.User)
+def create_user(user: userSchemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = users.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+    return users.create_user(db=db, user=user)
 
-
-@app.get("/users/", response_model=list[UserSchema.User])
+@app.get("/users/", response_model=List[userSchemas.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+    users_data = users.get_users(db, skip=skip, limit=limit)
+    return users_data
 
-@app.get("/users/{user_id}", response_model=UserSchema.User)
+@app.get("/users/{user_id}", response_model=userSchemas.User)
 def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user = users.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-@app.post("/courses", response_model=schemas.Course)
-def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
-    db_course = crud.get_course_by_name(db, name=course.name)
+@app.get('/courses', response_model=List[courseSchemas.Course])
+def get_courses(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_courses = courses.get_courses(db, skip=skip, limit=limit)
+    return db_courses
+
+@app.post("/courses", response_model=courseSchemas.Course)
+def create_course(course: courseSchemas.CourseCreate, db: Session = Depends(get_db)):
+    db_course = courses.get_course_by_name(db, name=course.name)
     if db_course:
         raise HTTPException(status_code=400, detail="Course already exists")
-    return crud.create_course(db=db, course=course)
+    return courses.create_course(db=db, course=course)
 
-@app.post("/rounds", response_model=schemas.Round)
-def create_round(round: schemas.RoundCreate, db: Session = Depends(get_db)):
-    return crud.create_round(db=db, round=round)
+@app.post("/rounds", response_model=roundSchemas.Round)
+def create_round(round: roundSchemas.RoundCreate, db: Session = Depends(get_db)):
+    return rounds.create_round(db=db, round=round)
 
-@app.get("/rounds/{round_id}", response_model=schemas.Round)
+@app.get("/rounds/{round_id}", response_model=roundSchemas.Round)
 def read_round(round_id: int, db: Session = Depends(get_db)):
-    db_round = crud.get_round_by_id(db, round_id=round_id)
+    db_round = rounds.get_round_by_id(db, round_id=round_id)
     if db_round is None:
         raise HTTPException(status_code=404, detail="Round not found")
     return db_round
 
-@app.post("/scores", response_model=schemas.Score)
-def create_score(score: schemas.ScoreCreate, db: Session = Depends(get_db)):
+@app.post("/scores", response_model=scoreSchemas.Score)
+def create_score(score: scoreSchemas.ScoreCreate, db: Session = Depends(get_db)):
     # TODO: Check that the user hasn't created a score for this hole already
-    return crud.create_score(db=db, score=score)
+    return scores.create_score(db=db, score=score)
 
-@app.post("/scores/{round_id}", response_model=List[schemas.Score])
-def create_score_for_round(round_id: int, score: schemas.ScoreRoundCreate, db: Session = Depends(get_db)):
-    return crud.create_scores_for_full_round(db=db, round_id=round_id, scores=score.scores)
+@app.post("/scores/{round_id}", response_model=List[scoreSchemas.Score])
+def create_score_for_round(round_id: int, score: scoreSchemas.ScoreRoundCreate, db: Session = Depends(get_db)):
+    return scores.create_scores_for_full_round(db=db, round_id=round_id, scores=score.scores)
 
 # supabase = create_supabase_client()
 
