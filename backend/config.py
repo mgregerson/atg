@@ -1,0 +1,3 @@
+url="https://gtovbjfqywuqddscfvwb.supabase.co"
+key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b3ZiamZxeXd1cWRkc2NmdndiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc0OTc1MjcsImV4cCI6MjAyMzA3MzUyN30.SnGqLraU1GsmjdVOiULEK_exRayMMKGTMiSjdEzvUXs"
+uri="postgresql://postgres.gtovbjfqywuqddscfvwb:allthatgolfisgoingtobesick@aws-0-us-west-1.pooler.supabase.com:5432/postgres"
