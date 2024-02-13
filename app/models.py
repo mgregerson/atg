@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from .database import Base
+from .database.db import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -19,6 +19,7 @@ class Course(Base):
     city = Column(String(50), index=True)
     state = Column(String(50), index=True)
     par = Column(Integer, index=True)
+    zip_code = Column(Integer)
     rounds = relationship("Round", back_populates="course")
 
 class Round(Base):

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-from datetime import date
-from typing import List, Optional
-from .schemas import Round
+from typing import List
+from .roundSchemas import Round
+
 
 class UserBase(BaseModel):
     username: str
